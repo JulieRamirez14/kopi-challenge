@@ -1,0 +1,81 @@
+# Docker Compose para desarrollo
+# Extensión del docker-compose.yml base con configuraciones de desarrollo
+
+version: '3.8'
+
+services:
+  debate-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development  # Usar stage de desarrollo
+    container_name: debate-api-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DEBUG_MODE=true
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - ENABLE_LOGGING=true
+      - MAX_CONVERSATION_HISTORY=5
+      - RESPONSE_TIMEOUT_SECONDS=30
+      - DEFAULT_PERSONALITY=conspiracy_theorist
+    volumes:
+      # Mount código fuente para desarrollo con hot reload
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./logs:/app/logs
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./.env:/app/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - debate-network-dev
+    labels:
+      - "com.kopiachallenge.service=debate-api"
+      - "com.kopiachallenge.environment=development"
+    # Comando de desarrollo con auto-reload
+    command: ["uvicorn", "src.interfaces.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]
+
+  # Servicio adicional para testing
+  debate-api-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: debate-api-test
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8001
+      - DEBUG_MODE=true
+      - ENVIRONMENT=test
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./pyproject.toml:/app/pyproject.toml
+    networks:
+      - debate-network-dev
+    profiles:
+      - testing  # Solo se ejecuta cuando se especifica el profile
+    labels:
+      - "com.kopiachallenge.service=debate-api-test"
+      - "com.kopiachallenge.environment=test"
+    command: ["python", "-m", "pytest", "tests/", "-v", "--cov=src"]
+
+volumes:
+  logs:
+    driver: local
+
+networks:
+  debate-network-dev:
+    driver: bridge
+    labels:
+      - "com.kopiachallenge.network=development"

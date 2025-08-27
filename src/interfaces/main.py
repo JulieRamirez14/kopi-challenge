@@ -54,19 +54,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configurar CORS
+# Configure CORS
 configure_cors(app)
 
-# Agregar middleware de manejo de errores
+# Add error handling middleware
 app.add_middleware(ErrorHandlerMiddleware)
 
-# Inicializar controlador
+# Initialize controller
 chat_controller = ChatController()
 
 
 @app.post(
     "/chat",
     response_model=ChatResponse,
+    tags=["chat"],
     responses={
         400: {"model": ErrorResponse, "description": "Bad Request - Invalid input"},
         404: {"model": ErrorResponse, "description": "Not Found - Conversation not found"},
@@ -81,16 +82,16 @@ chat_controller = ChatController()
 )
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """
-    Endpoint principal de chat.
+    Main chat endpoint.
     
     Args:
-        request: Request con conversation_id (opcional) y mensaje
+        request: Request with conversation_id (optional) and message
         
     Returns:
-        Response con conversation_id y historial de mensajes
+        Response with conversation_id and message history
         
     Raises:
-        HTTPException: Para diversos errores (400, 404, 500)
+        HTTPException: For various errors (400, 404, 500)
     """
     return await chat_controller.chat(request)
 
@@ -98,15 +99,16 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 @app.get(
     "/health",
     response_model=HealthResponse,
+    tags=["health"],
     summary="Health check",
     description="Checks the health status of the application and its components.",
 )
 async def health_endpoint() -> HealthResponse:
     """
-    Endpoint de health check.
+    Health check endpoint.
     
     Returns:
-        Estado de salud del sistema y componentes
+        System and components health status
     """
     health_data = await chat_controller.health_check()
     
@@ -119,6 +121,7 @@ async def health_endpoint() -> HealthResponse:
 
 @app.get(
     "/",
+    tags=["info"],
     summary="API Info",
     description="Basic information about the API.",
 )
@@ -132,7 +135,7 @@ async def root_endpoint() -> Dict[str, Any]:
     return {
         "name": "Kopi Challenge - Persuasive Debate Chatbot API",
         "version": "1.0.0",
-        "description": "API para un chatbot que mantiene debates persuasivos",
+        "description": "API for a chatbot that maintains persuasive debates",
         "endpoints": {
             "chat": "/chat",
             "health": "/health",
@@ -146,7 +149,7 @@ async def root_endpoint() -> Dict[str, Any]:
 
 @app.exception_handler(404)
 async def not_found_handler(request, exc):
-    """Handler personalizado para 404s."""
+    """Custom handler for 404s."""
     return JSONResponse(
         status_code=404,
         content={
@@ -159,7 +162,7 @@ async def not_found_handler(request, exc):
 
 @app.exception_handler(405)
 async def method_not_allowed_handler(request, exc):
-    """Handler personalizado para 405s."""
+    """Custom handler for 405s."""
     return JSONResponse(
         status_code=405,
         content={
@@ -174,11 +177,15 @@ async def method_not_allowed_handler(request, exc):
 app.openapi_tags = [
     {
         "name": "chat",
-        "description": "Operaciones de chat y debate con el bot",
+        "description": "Chat and debate operations with the bot",
     },
     {
         "name": "health",
-        "description": "Endpoints de monitoreo y salud del sistema",
+        "description": "System monitoring and health check endpoints",
+    },
+    {
+        "name": "info",
+        "description": "API information and documentation",
     },
 ]
 

@@ -1,8 +1,8 @@
 """
-Esquemas Pydantic para la API de chat.
+Pydantic schemas for the chat API.
 
-Define los modelos de datos de entrada y salida para el API REST,
-siguiendo exactamente las especificaciones del challenge.
+Defines input and output data models for the REST API,
+following exactly the challenge specifications.
 """
 
 from typing import List, Optional

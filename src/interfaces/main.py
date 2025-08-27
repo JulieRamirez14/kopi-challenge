@@ -1,7 +1,7 @@
 """
-Punto de entrada principal de la aplicación FastAPI.
+Main entry point for the FastAPI application.
 
-Configura y expone la API REST para el chatbot de debate persuasivo.
+Configures and exposes the REST API for the persuasive debate chatbot.
 """
 
 from contextlib import asynccontextmanager
@@ -25,28 +25,28 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Context manager para el ciclo de vida de la aplicación.
+    Context manager for the application lifecycle.
     
-    Maneja inicialización y limpieza de recursos.
+    Handles resource initialization and cleanup.
     """
     # Startup
     logger.info("Starting Kopi Challenge Debate API")
     
     try:
-        # Aquí se pueden inicializar recursos si es necesario
-        # (conexiones a BD, caches, etc.)
+        # Resources can be initialized here if needed
+        # (DB connections, caches, etc.)
         yield
     finally:
         # Cleanup
         logger.info("Shutting down Kopi Challenge Debate API")
 
 
-# Crear aplicación FastAPI
+# Create FastAPI application
 app = FastAPI(
     title="Kopi Challenge - Persuasive Debate Chatbot API",
     description=(
-        "API para un chatbot que puede mantener un debate y intentar convencer "
-        "al oponente de sus puntos de vista, sin importar qué tan irracional sea la posición."
+        "API for a chatbot that can hold a debate and attempt to convince "
+        "the opponent of its viewpoints, regardless of how irrational the position may be."
     ),
     version="1.0.0",
     docs_url="/docs",
@@ -74,9 +74,9 @@ chat_controller = ChatController()
     },
     summary="Chat with the debate bot",
     description=(
-        "Endpoint principal para chatear con el bot de debate. "
-        "Si conversation_id es null, inicia una nueva conversación. "
-        "Si conversation_id se proporciona, continúa la conversación existente."
+        "Main endpoint to chat with the debate bot. "
+        "If conversation_id is null, starts a new conversation. "
+        "If conversation_id is provided, continues the existing conversation."
     ),
 )
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
@@ -99,7 +99,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     "/health",
     response_model=HealthResponse,
     summary="Health check",
-    description="Verifica el estado de salud de la aplicación y sus componentes.",
+    description="Checks the health status of the application and its components.",
 )
 async def health_endpoint() -> HealthResponse:
     """
@@ -120,14 +120,14 @@ async def health_endpoint() -> HealthResponse:
 @app.get(
     "/",
     summary="API Info",
-    description="Información básica sobre la API.",
+    description="Basic information about the API.",
 )
 async def root_endpoint() -> Dict[str, Any]:
     """
-    Endpoint raíz con información de la API.
+    Root endpoint with API information.
     
     Returns:
-        Información básica de la API
+        Basic API information
     """
     return {
         "name": "Kopi Challenge - Persuasive Debate Chatbot API",
@@ -170,7 +170,7 @@ async def method_not_allowed_handler(request, exc):
     )
 
 
-# Metadata adicional para la documentación
+# Additional metadata for documentation
 app.openapi_tags = [
     {
         "name": "chat",

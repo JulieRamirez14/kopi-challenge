@@ -1,7 +1,7 @@
 """
-Middleware para manejo global de errores.
+Middleware for global error handling.
 
-Captura excepciones no manejadas y las convierte en respuestas HTTP apropiadas.
+Captures unhandled exceptions and converts them into appropriate HTTP responses.
 """
 
 import logging

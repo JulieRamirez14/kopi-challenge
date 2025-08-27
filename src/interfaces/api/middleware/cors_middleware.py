@@ -1,8 +1,8 @@
 """
-Middleware para CORS (Cross-Origin Resource Sharing).
+Middleware for CORS (Cross-Origin Resource Sharing).
 
-Configura CORS para permitir requests desde diferentes dominios,
-especialmente importante para demos y desarrollo.
+Configures CORS to allow requests from different domains,
+especially important for demos and development.
 """
 
 from fastapi.middleware.cors import CORSMiddleware
